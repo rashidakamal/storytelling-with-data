@@ -1,0 +1,501 @@
+country,year,refugees
+Afghanistan,1990,6339095.0
+Iraq,1990,1133805.0
+Somalia,1990,470174.0
+Sudan,1990,523998.0
+Vietnam,1990,496029.0
+Burundi,1990,191622.0
+Liberia,1990,735689.0
+Bosnia and Herzegovina,1990,
+Rwanda,1990,361322.0
+"Congo, Dem. Rep.",1990,67423.0
+Syrian Arab Republic,1990,2148.0
+Eritrea,1990,43.0
+Angola,1990,407760.0
+Mozambique,1990,1247992.0
+Myanmar,1990,28.0
+European Union,1990,90759.0
+West Bank and Gaza,1990,8521.0
+Croatia,1990,
+Azerbaijan,1990,
+Sierra Leone,1990,9.0
+Afghanistan,1991,6306301.0
+Iraq,1991,1321853.0
+Somalia,1991,732594.0
+Sudan,1991,196242.0
+Vietnam,1991,498323.0
+Burundi,1991,223946.0
+Liberia,1991,673435.0
+Bosnia and Herzegovina,1991,
+Rwanda,1991,431240.0
+"Congo, Dem. Rep.",1991,65816.0
+Syrian Arab Republic,1991,3037.0
+Eritrea,1991,500633.0
+Angola,1991,381636.0
+Mozambique,1991,1316636.0
+Myanmar,1991,40053.0
+European Union,1991,60797.0
+West Bank and Gaza,1991,65177.0
+Croatia,1991,
+Azerbaijan,1991,
+Sierra Leone,1991,142614.0
+Afghanistan,1992,4552153.0
+Iraq,1992,1343824.0
+Somalia,1992,812195.0
+Sudan,1992,267767.0
+Vietnam,1992,517111.0
+Burundi,1992,184135.0
+Liberia,1992,520915.0
+Bosnia and Herzegovina,1992,437501.0
+Rwanda,1992,434736.0
+"Congo, Dem. Rep.",1992,81269.0
+Syrian Arab Republic,1992,4408.0
+Eritrea,1992,503200.0
+Angola,1992,300492.0
+Mozambique,1992,1445474.0
+Myanmar,1992,245130.0
+European Union,1992,218587.0
+West Bank and Gaza,1992,95343.0
+Croatia,1992,168571.0
+Azerbaijan,1992,300000.0
+Sierra Leone,1992,253592.0
+Afghanistan,1993,3374576.0
+Iraq,1993,771077.0
+Somalia,1993,574617.0
+Sudan,1993,393871.0
+Vietnam,1993,527627.0
+Burundi,1993,871382.0
+Liberia,1993,704051.0
+Bosnia and Herzegovina,1993,618427.0
+Rwanda,1993,450462.0
+"Congo, Dem. Rep.",1993,74826.0
+Syrian Arab Republic,1993,5404.0
+Eritrea,1993,427213.0
+Angola,1993,323831.0
+Mozambique,1993,1172550.0
+Myanmar,1993,281574.0
+European Union,1993,230389.0
+West Bank and Gaza,1993,81474.0
+Croatia,1993,151688.0
+Azerbaijan,1993,328005.0
+Sierra Leone,1993,311183.0
+Afghanistan,1994,2731169.0
+Iraq,1994,749834.0
+Somalia,1994,631426.0
+Sudan,1994,405135.0
+Vietnam,1994,539101.0
+Burundi,1994,389706.0
+Liberia,1994,797835.0
+Bosnia and Herzegovina,1994,776084.0
+Rwanda,1994,2257573.0
+"Congo, Dem. Rep.",1994,73286.0
+Syrian Arab Republic,1994,7087.0
+Eritrea,1994,422433.0
+Angola,1994,282577.0
+Mozambique,1994,234497.0
+Myanmar,1994,204510.0
+European Union,1994,164633.0
+West Bank and Gaza,1994,82564.0
+Croatia,1994,76256.0
+Azerbaijan,1994,299095.0
+Sierra Leone,1994,275302.0
+Afghanistan,1995,2679133.0
+Iraq,1995,718719.0
+Somalia,1995,638698.0
+Sudan,1995,445280.0
+Vietnam,1995,543541.0
+Burundi,1995,350582.0
+Liberia,1995,744637.0
+Bosnia and Herzegovina,1995,769753.0
+Rwanda,1995,1819366.0
+"Congo, Dem. Rep.",1995,89738.0
+Syrian Arab Republic,1995,7994.0
+Eritrea,1995,286712.0
+Angola,1995,246657.0
+Mozambique,1995,125562.0
+Myanmar,1995,152298.0
+European Union,1995,305418.0
+West Bank and Gaza,1995,72768.0
+Croatia,1995,245572.0
+Azerbaijan,1995,200520.0
+Sierra Leone,1995,379495.0
+Afghanistan,1996,2674236.0
+Iraq,1996,714730.0
+Somalia,1996,636985.0
+Sudan,1996,475305.0
+Vietnam,1996,518340.0
+Burundi,1996,428680.0
+Liberia,1996,784008.0
+Bosnia and Herzegovina,1996,993868.0
+Rwanda,1996,469136.0
+"Congo, Dem. Rep.",1996,158794.0
+Syrian Arab Republic,1996,8609.0
+Eritrea,1996,332225.0
+Angola,1996,249687.0
+Mozambique,1996,34657.0
+Myanmar,1996,143017.0
+European Union,1996,351079.0
+West Bank and Gaza,1996,80215.0
+Croatia,1996,310088.0
+Azerbaijan,1996,236086.0
+Sierra Leone,1996,375104.0
+Afghanistan,1997,2676674.0
+Iraq,1997,707338.0
+Somalia,1997,608094.0
+Sudan,1997,364589.0
+Vietnam,1997,476795.0
+Burundi,1997,519123.0
+Liberia,1997,493340.0
+Bosnia and Herzegovina,1997,849241.0
+Rwanda,1997,68003.0
+"Congo, Dem. Rep.",1997,173995.0
+Syrian Arab Republic,1997,8653.0
+Eritrea,1997,319077.0
+Angola,1997,267696.0
+Mozambique,1997,33652.0
+Myanmar,1997,135772.0
+European Union,1997,380822.0
+West Bank and Gaza,1997,76821.0
+Croatia,1997,349307.0
+Azerbaijan,1997,234950.0
+Sierra Leone,1997,329327.0
+Afghanistan,1998,2667115.0
+Iraq,1998,675030.0
+Somalia,1998,557959.0
+Sudan,1998,390013.0
+Vietnam,1998,435437.0
+Burundi,1998,502568.0
+Liberia,1998,365398.0
+Bosnia and Herzegovina,1998,640075.0
+Rwanda,1998,77743.0
+"Congo, Dem. Rep.",1998,158833.0
+Syrian Arab Republic,1998,8126.0
+Eritrea,1998,346781.0
+Angola,1998,319430.0
+Mozambique,1998,59.0
+Myanmar,1998,133407.0
+European Union,1998,364129.0
+West Bank and Gaza,1998,77524.0
+Croatia,1998,338089.0
+Azerbaijan,1998,329657.0
+Sierra Leone,1998,406077.0
+Afghanistan,1999,2601691.0
+Iraq,1999,642886.0
+Somalia,1999,524613.0
+Sudan,1999,485460.0
+Vietnam,1999,405377.0
+Burundi,1999,527449.0
+Liberia,1999,294694.0
+Bosnia and Herzegovina,1999,598193.0
+Rwanda,1999,88944.0
+"Congo, Dem. Rep.",1999,255950.0
+Syrian Arab Republic,1999,6695.0
+Eritrea,1999,347138.0
+Angola,1999,353478.0
+Mozambique,1999,35.0
+Myanmar,1999,131663.0
+European Union,1999,375439.0
+West Bank and Gaza,1999,100602.0
+Croatia,1999,353725.0
+Azerbaijan,1999,311131.0
+Sierra Leone,1999,490061.0
+Afghanistan,2000,3587336.0
+Iraq,2000,526179.0
+Somalia,2000,475655.0
+Sudan,2000,494363.0
+Vietnam,2000,370758.0
+Burundi,2000,568084.0
+Liberia,2000,266930.0
+Bosnia and Herzegovina,2000,504981.0
+Rwanda,2000,119056.0
+"Congo, Dem. Rep.",2000,371713.0
+Syrian Arab Republic,2000,5871.0
+Eritrea,2000,376851.0
+Angola,2000,433760.0
+Mozambique,2000,30.0
+Myanmar,2000,137128.0
+European Union,2000,353554.0
+West Bank and Gaza,2000,110640.0
+Croatia,2000,335199.0
+Azerbaijan,2000,284277.0
+Sierra Leone,2000,402807.0
+Afghanistan,2001,3809767.0
+Iraq,2001,530511.0
+Somalia,2001,440134.0
+Sudan,2001,489950.0
+Vietnam,2001,353224.0
+Burundi,2001,553999.0
+Liberia,2001,244608.0
+Bosnia and Herzegovina,2001,447321.0
+Rwanda,2001,84513.0
+"Congo, Dem. Rep.",2001,392146.0
+Syrian Arab Republic,2001,4869.0
+Eritrea,2001,333229.0
+Angola,2001,470625.0
+Mozambique,2001,46.0
+Myanmar,2001,145856.0
+European Union,2001,307498.0
+West Bank and Gaza,2001,349161.0
+Croatia,2001,290279.0
+Azerbaijan,2001,268759.0
+Sierra Leone,2001,179113.0
+Afghanistan,2002,2510294.0
+Iraq,2002,422512.0
+Somalia,2002,432316.0
+Sudan,2002,508877.0
+Vietnam,2002,373741.0
+Burundi,2002,574557.0
+Liberia,2002,275422.0
+Bosnia and Herzegovina,2002,406448.0
+Rwanda,2002,75257.0
+"Congo, Dem. Rep.",2002,421362.0
+Syrian Arab Republic,2002,18913.0
+Eritrea,2002,318176.0
+Angola,2002,435421.0
+Mozambique,2002,130.0
+Myanmar,2002,148501.0
+European Union,2002,322708.0
+West Bank and Gaza,2002,428782.0
+Croatia,2002,274818.0
+Azerbaijan,2002,260214.0
+Sierra Leone,2002,141475.0
+Afghanistan,2003,2136043.0
+Iraq,2003,368580.0
+Somalia,2003,402336.0
+Sudan,2003,606242.0
+Vietnam,2003,363179.0
+Burundi,2003,531637.0
+Liberia,2003,353344.0
+Bosnia and Herzegovina,2003,300006.0
+Rwanda,2003,75263.0
+"Congo, Dem. Rep.",2003,453465.0
+Syrian Arab Republic,2003,20819.0
+Eritrea,2003,124121.0
+Angola,2003,329583.0
+Mozambique,2003,111.0
+Myanmar,2003,151384.0
+European Union,2003,275259.0
+West Bank and Gaza,2003,350568.0
+Croatia,2003,230189.0
+Azerbaijan,2003,253255.0
+Sierra Leone,2003,70580.0
+Afghanistan,2004,2414401.0
+Iraq,2004,311884.0
+Somalia,2004,389314.0
+Sudan,2004,730650.0
+Vietnam,2004,349780.0
+Burundi,2004,485773.0
+Liberia,2004,335467.0
+Bosnia and Herzegovina,2004,228831.0
+Rwanda,2004,63812.0
+"Congo, Dem. Rep.",2004,462208.0
+Syrian Arab Republic,2004,21439.0
+Eritrea,2004,131131.0
+Angola,2004,228838.0
+Mozambique,2004,104.0
+Myanmar,2004,161013.0
+European Union,2004,248973.0
+West Bank and Gaza,2004,350617.0
+Croatia,2004,215475.0
+Azerbaijan,2004,250583.0
+Sierra Leone,2004,41802.0
+Afghanistan,2005,2166149.0
+Iraq,2005,262299.0
+Somalia,2005,395553.0
+Sudan,2005,693632.0
+Vietnam,2005,358268.0
+Burundi,2005,438706.0
+Liberia,2005,231139.0
+Bosnia and Herzegovina,2005,109930.0
+Rwanda,2005,100264.0
+"Congo, Dem. Rep.",2005,430929.0
+Syrian Arab Republic,2005,16401.0
+Eritrea,2005,144066.0
+Angola,2005,215827.0
+Mozambique,2005,104.0
+Myanmar,2005,164864.0
+European Union,2005,168834.0
+West Bank and Gaza,2005,349673.0
+Croatia,2005,119148.0
+Azerbaijan,2005,233675.0
+Sierra Leone,2005,40477.0
+Afghanistan,2006,2107519.0
+Iraq,2006,1450905.0
+Somalia,2006,464038.0
+Sudan,2006,686311.0
+Vietnam,2006,374279.0
+Burundi,2006,396541.0
+Liberia,2006,160548.0
+Bosnia and Herzegovina,2006,199946.0
+Rwanda,2006,92966.0
+"Congo, Dem. Rep.",2006,401914.0
+Syrian Arab Republic,2006,12337.0
+Eritrea,2006,193745.0
+Angola,2006,206501.0
+Mozambique,2006,231.0
+Myanmar,2006,202826.0
+European Union,2006,131946.0
+West Bank and Gaza,2006,334142.0
+Croatia,2006,93767.0
+Azerbaijan,2006,126068.0
+Sierra Leone,2006,42863.0
+Afghanistan,2007,3057661.0
+Iraq,2007,2309245.0
+Somalia,2007,457356.0
+Sudan,2007,523032.0
+Vietnam,2007,327776.0
+Burundi,2007,375727.0
+Liberia,2007,91540.0
+Bosnia and Herzegovina,2007,78273.0
+Rwanda,2007,80964.0
+"Congo, Dem. Rep.",2007,370374.0
+Syrian Arab Republic,2007,13690.0
+Eritrea,2007,208748.0
+Angola,2007,186155.0
+Mozambique,2007,222.0
+Myanmar,2007,191313.0
+European Union,2007,119385.0
+West Bank and Gaza,2007,341237.0
+Croatia,2007,100423.0
+Azerbaijan,2007,15916.0
+Sierra Leone,2007,32127.0
+Afghanistan,2008,2833128.0
+Iraq,2008,1903519.0
+Somalia,2008,561155.0
+Sudan,2008,419248.0
+Vietnam,2008,328183.0
+Burundi,2008,281592.0
+Liberia,2008,75213.0
+Bosnia and Herzegovina,2008,74366.0
+Rwanda,2008,72530.0
+"Congo, Dem. Rep.",2008,367995.0
+Syrian Arab Republic,2008,15211.0
+Eritrea,2008,186398.0
+Angola,2008,171393.0
+Mozambique,2008,208.0
+Myanmar,2008,184413.0
+European Union,2008,112876.0
+West Bank and Gaza,2008,340016.0
+Croatia,2008,97012.0
+Azerbaijan,2008,16319.0
+Sierra Leone,2008,32536.0
+Afghanistan,2009,2887123.0
+Iraq,2009,1785212.0
+Somalia,2009,678309.0
+Sudan,2009,368195.0
+Vietnam,2009,339289.0
+Burundi,2009,94239.0
+Liberia,2009,71599.0
+Bosnia and Herzegovina,2009,70018.0
+Rwanda,2009,129109.0
+"Congo, Dem. Rep.",2009,455852.0
+Syrian Arab Republic,2009,17914.0
+Eritrea,2009,209168.0
+Angola,2009,141021.0
+Mozambique,2009,136.0
+Myanmar,2009,406669.0
+European Union,2009,90931.0
+West Bank and Gaza,2009,95201.0
+Croatia,2009,76478.0
+Azerbaijan,2009,16939.0
+Sierra Leone,2009,15417.0
+Afghanistan,2010,3054709.0
+Iraq,2010,1683579.0
+Somalia,2010,770154.0
+Sudan,2010,387288.0
+Vietnam,2010,338698.0
+Burundi,2010,84064.0
+Liberia,2010,70129.0
+Bosnia and Herzegovina,2010,63004.0
+Rwanda,2010,115524.0
+"Congo, Dem. Rep.",2010,476693.0
+Syrian Arab Republic,2010,18452.0
+Eritrea,2010,222460.0
+Angola,2010,134858.0
+Mozambique,2010,131.0
+Myanmar,2010,415670.0
+European Union,2010,78832.0
+West Bank and Gaza,2010,93323.0
+Croatia,2010,65861.0
+Azerbaijan,2010,16753.0
+Sierra Leone,2010,11275.0
+Afghanistan,2011,2664436.0
+Iraq,2011,1428308.0
+Somalia,2011,1077048.0
+Sudan,2011,500014.0
+Vietnam,2011,337829.0
+Burundi,2011,101288.0
+Liberia,2011,66780.0
+Bosnia and Herzegovina,2011,58578.0
+Rwanda,2011,106833.0
+"Congo, Dem. Rep.",2011,491481.0
+Syrian Arab Republic,2011,19931.0
+Eritrea,2011,251954.0
+Angola,2011,128664.0
+Mozambique,2011,155.0
+Myanmar,2011,414626.0
+European Union,2011,74820.0
+West Bank and Gaza,2011,94150.0
+Croatia,2011,62649.0
+Azerbaijan,2011,16162.0
+Sierra Leone,2011,8002.0
+Afghanistan,2012,2586152.0
+Iraq,2012,746206.0
+Somalia,2012,1136719.0
+Sudan,2012,568943.0
+Vietnam,2012,336939.0
+Burundi,2012,73363.0
+Liberia,2012,23428.0
+Bosnia and Herzegovina,2012,51822.0
+Rwanda,2012,97373.0
+"Congo, Dem. Rep.",2012,509290.0
+Syrian Arab Republic,2012,729022.0
+Eritrea,2012,285371.0
+Angola,2012,19258.0
+Mozambique,2012,160.0
+Myanmar,2012,415371.0
+European Union,2012,73665.0
+West Bank and Gaza,2012,94918.0
+Croatia,2012,62606.0
+Azerbaijan,2012,15537.0
+Sierra Leone,2012,6202.0
+Afghanistan,2013,2556556.0
+Iraq,2013,401417.0
+Somalia,2013,1121738.0
+Sudan,2013,649331.0
+Vietnam,2013,314105.0
+Burundi,2013,72652.0
+Liberia,2013,17576.0
+Bosnia and Herzegovina,2013,26811.0
+Rwanda,2013,83937.0
+"Congo, Dem. Rep.",2013,499541.0
+Syrian Arab Republic,2013,2468369.0
+Eritrea,2013,308022.0
+Angola,2013,10297.0
+Mozambique,2013,56.0
+Myanmar,2013,479608.0
+European Union,2013,59639.0
+West Bank and Gaza,2013,96044.0
+Croatia,2013,49760.0
+Azerbaijan,2013,10813.0
+Sierra Leone,2013,5320.0
+Afghanistan,2014,2593368.0
+Iraq,2014,369904.0
+Somalia,2014,1106068.0
+Sudan,2014,659395.0
+Vietnam,2014,313418.0
+Burundi,2014,72499.0
+Liberia,2014,13548.0
+Bosnia and Herzegovina,2014,21845.0
+Rwanda,2014,79411.0
+"Congo, Dem. Rep.",2014,516562.0
+Syrian Arab Republic,2014,3865720.0
+Eritrea,2014,330526.0
+Angola,2014,9507.0
+Mozambique,2014,58.0
+Myanmar,2014,223891.0
+European Union,2014,49577.0
+West Bank and Gaza,2014,97235.0
+Croatia,2014,40126.0
+Azerbaijan,2014,10521.0
+Sierra Leone,2014,4997.0

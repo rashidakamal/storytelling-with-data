@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js'></script> 
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script> 
+
+<style>
+
+body {
+    background-color: #F0ECEC;
+    color: #454545;
+}
+
+h2 {
+	font-family: sans-serif;
+    font-size: 14px;
+    color: #000000;
+    text-transform: uppercase;
+}
+
+.caption {
+    width: 400px;
+    background-color: #F0ECEC;
+    font-family: sans-serif;
+    font-size: 11px;
+    padding: 6px;
+    text-align: left;
+}
+
+.d3-tip {
+    font-family: sans-serif;
+    font-size: 11px;
+    line-height: 1;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.85);
+    color: #000;
+    border-radius: 1px;
+    text-align: center;
+}
+
+/* Creates a small triangle extender for the tooltip */
+/*.d3-tip:after {
+    box-sizing: border-box;
+    display: inline;
+    font-size: 10px;
+    width: 100%;
+    line-height: 1;
+    color: rgba(0, 0, 0, 0.95);
+    content: "\25BC";
+    position: absolute;
+    text-align: center;
+    float: left;
+}*/
+
+/* Style northward tooltips differently */
+/*.d3-tip.n:after {
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
+}*/
+
+</style>
+</head>
+<body>
+<center>
+	<br><br>
+	<h2>World Population Map</h2>
+
+	<div class="caption">
+        <span>This particular map highlights the distribution of the world's population across the globe. It's easy to see that most of the population -- particularly, mega-cities such as Shanghai, Karachi, Tokyo and Rio de Janiero -- are close to the coasts. </span> 
+    </div>
+    <br><br><br>
+	<div id="map"></div>
+</center>
+<script>
+
+
+function formatNumber (num) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+}
+
+
+function ready(error, data) {
+
+  	console.log(data[0]);
+
+  	var height = 600, width = 900;
+
+	var projection = d3.geo.mercator()
+				.scale(200)
+				// .center([5.65, 110.61])
+				.translate([width / 1.8, height / 2]);
+
+	var height = 600, width = 1100;
+
+	var svg = d3.select("#map").append("svg").attr("height", height).attr("width", width);
+
+	var chart = svg.append("g");
+
+	var country_scale = d3.scale.category20();
+
+    var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-15, 0])
+        .html(function(d) {
+            return "<strong>" + d['City'] + " : </strong><span style='color:#007cbc'>"+ d['Population']+" </span><br>";
+        });
+
+    chart.selectAll("circle")
+    		.data(data)
+    		.enter()
+    		.append('circle')
+    		.attr('r', function(d) {
+    			return 0.35 + (Math.sqrt(d['Population']) / 400);
+    		})
+    		.attr('cx', function(d) {
+    			var coords = [ d['Longitude'], d['Latitude'] ];
+    			var projected_coords = projection(coords);
+    			return projected_coords[0];
+    		})
+    		.attr('cy', function(d) {
+    			var coords = [ d['Longitude'], d['Latitude'] ];
+    			var projected_coords = projection(coords);
+    			return projected_coords[1];
+    		})
+    		.style('fill', function(d) {
+    			return country_scale(d['Country']);
+    		})
+    		.call(tip)
+    		.on('mouseover', function(d){
+    			tip.show(d);
+    		})
+            .on('mouseout', function(d){
+				tip.hide(d);    
+			});
+
+};
+
+d3.csv('population.csv', ready); 
+
+</script>
+</body>
+</html>

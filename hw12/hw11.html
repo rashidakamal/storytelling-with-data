@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Housing Choices</title>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js'></script>  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+<style>
+
+body {
+    background-color: #fdf9f9;
+    color: #454545;
+}
+
+h1 {
+    font-family: sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333333;
+    text-align: center;
+}
+
+h2 {
+    font-family: sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #333333;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+button {
+    background-color: #000000;
+    font-family: sans-serif;
+    color: #f1f1f1;
+    font-size: 11px;
+    border: 0;
+    float: clear;
+}
+
+a:link, a:visited, a:hover {
+    font-family: sans-serif;
+    color: #007cbc;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.container {
+    width: 950px;
+    background-color: #fdf9f9;
+    font-family: sans-serif;
+    font-size: 11px;
+    margin: 20px;
+    padding: 10px;
+}
+
+.caption {
+    width: 400px;
+    background-color: #fdf9f9;
+    font-family: sans-serif;
+    font-size: 11px;
+    padding: 6px;
+    text-align: left;
+    float: clear;
+}
+
+.intro {
+    width: 700px;
+    background-color: #fdf9f9;
+    font-family: sans-serif;
+    font-size: 12px;
+    padding: 6px;
+    text-align: left;
+}
+
+/*Source: https://css-tricks.com/examples/hrs/*/
+hr.style-six {
+    border: 0;
+    height: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.d3-tip {
+    font-family: sans-serif;
+    font-size: 11px;
+    line-height: 1;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #000;
+    border-radius: 1px;
+    text-align: center;
+}
+
+</style>
+
+</head>
+<body>
+
+<center>
+<div class="container">
+
+    <div class="intro">
+         <h1>Housing Choices for Married & Non-Family Households</h1><br>
+        <span>The housing markets in various parts of the country yield different housing choices amongst married and non-married/non-family households. Higher proportions are denoted in pink, while lower proportions are denoted in green. This data represents 817 of over 3,000 counties in the United States. (Data Source: <a href="http://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_14_1YR_S1101&prodType=table">U.S. Census Bureau</a>) </span>
+    </div>
+
+    <br><br>
+    <hr class="style-six">
+    <br><br>
+    <div class="map_title">
+    </div>
+    <div id="map"></div><br><br><br>
+
+<!-- Attempting dropdown very poorly, source: http://bl.ocks.org/niallmackenzie/8a763afd14e195154e63 -->
+
+<!-- Ugh, for me, later: http://www.w3schools.com/bootstrap/bootstrap_dropdowns.asp
+ -->
+
+    <div class="btn-group pull-center">
+
+        <button type="button" class="dropdown-toggle" data-toggle="dropdown">
+            Pick a new view <span class="caret"></span>
+        </button>
+
+
+        <ul class="dropdown-menu" role="menu">
+            <li><a class="m" value="HC02_EST_VC33" href="#map">Married Households in Renter-Occupied Units</a></li>
+            <li><a class="m" value="HC05_EST_VC32" href="#map">Non-Married Households in Owner-Occupied Units</a></li>
+        </ul>
+    </div>
+
+<br><br>
+    <div class="caption">
+    </div>
+    <br><br>
+
+</center>
+</div>
+    <script>
+
+    function combineData(geojson_data, csv_data, geojson_key, csv_key) {
+        geojson_data['features'].forEach( function(d_json) {
+            csv_data.forEach( function(d_csv) {
+                if(d_json['properties'][geojson_key] == d_csv[csv_key]) { Object.keys(d_csv).forEach( function(key) { d_json['properties'][key] = d_csv[key]; }); }
+            });
+        });
+    };
+
+    queue()
+        .defer(d3.json, "gz_2010_us_050_00_5m.json")
+        .defer(d3.csv, "housing_units.csv")
+        .await( function(error, data, csv_data) {
+
+            combineData(data, csv_data, "GEO_ID", "GEO.id");
+
+
+            var counties = data['features'];
+
+            var svg_height = 500, svg_width = 900;
+            var margins = 0;
+            var height = svg_height - margins * 2;
+            var width = svg_width - margins * 2;
+
+            var svg = d3.select("#map").append('svg')
+                    .attr('height', svg_height)
+                    .attr('width', svg_width); 
+
+            var map = svg.append("g").attr("transform", "translate(" + margins + "," + margins + ")");
+
+            var projection = d3.geo.albersUsa()
+                                    .scale(1000)
+                                    .translate([width / 2, height / 2]);
+            var path = d3.geo.path().projection(projection);
+
+            var base_map = map.selectAll("path")
+                    .data(counties)
+                    .enter()
+                    .append("path")
+                    .attr('d', path)
+                    .style('fill', "#fdf9f9")
+                    .style('stroke', '#333333')
+                    .style('stroke-width', 0.2);
+
+            function update(chosen_pop){
+
+                var max_val = d3.max(counties, function(d) {
+                    return +d['properties'][chosen_pop];
+                });
+
+                var median = d3.median(counties, function(d) {
+                    return +d['properties'][chosen_pop];
+                });
+
+                var mean = d3.mean(counties, function(d) {
+                    return +d['properties'][chosen_pop];
+                });
+
+                var all_areas = counties.map( function(d) {
+                    return +d['properties'][chosen_pop];
+                });
+
+                var color_scale = d3.scale.linear()
+                    .domain([0, median, (max_val-10)])
+                    .range(['#c51b8a', '#ffffe0', '#000080']);
+
+                var tip = d3.tip()
+                    .attr('class', 'd3-tip')
+                    .offset([-15, 0])
+                    .html(function(d) {
+                        return "<strong>" + d['properties']['GEO.display-label'] + " </strong><br><span style='color:#000080'>"+ d['properties'][chosen_pop]+" </span><br>";
+                        });
+
+                base_map.call(tip)
+                    .style('fill', function(d) {
+                            return color_scale(d['properties'][chosen_pop]);
+                        })
+                    .on('mouseover', function(d){
+                        if (d['properties']['GEO.display-label'] != undefined) {
+                            tip.show(d);
+                        d3.select(this).style('fill','#e1e1e1');
+                        };
+                    })
+                    .on('mouseout', function(d){
+                        tip.hide(d);
+                        d3.select(this).style('fill', function(d) {
+                            return color_scale(d['properties'][chosen_pop]);
+                        });
+                    });
+
+                d3.select(".caption")
+                    .html(function(d) {
+                        if (chosen_pop == "HC02_EST_VC33") {
+                            return "<span> This map illustrates that the West Coast sees a greater proportion of married households who choose to rent as compared to the proportions seen in the eastern half of the country -- with a few notable exceptions: counties near New York City and counties in Florida.</span>"
+                        } else {
+                            return "<span>This map looks at the proportion of non-family households in owner-occupied housing units. Florida, Arizona, and New Mexico experience high proportions of such households -- it is possible that the retired community represents some of these households, but the finding bears further investigation.</span>"
+                        };
+
+                });
+                d3.select(".map_title")
+                    .html(function(d) {
+                        if (chosen_pop == "HC02_EST_VC33") {
+                            return "<h2>Proportion of Married Households in Renter-Occupied Housing Units</h2>";
+                        } else {
+                            return "<h2>Proportion of Non-Family Households in Owner-Occupied Housing Units</h2>"
+                        };
+                });
+
+        };
+
+        // Married couples that are renting
+            update('HC02_EST_VC33');
+
+            d3.selectAll(".m")
+                .on("click", function() {
+                    var new_val = this.getAttribute("value");
+                    update(new_val);
+                    });
+
+    });
+
+
+</script>
+</body>
+</html>

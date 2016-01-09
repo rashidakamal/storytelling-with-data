@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title> Internet Users Around The World</title>
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+
+
+<style>
+.axis path,
+.axis line {
+	fill: none;
+	stroke: black;
+	shape-rendering: crispEdges;
+}
+.axis text {
+	font-family: sans-serif;
+	font-size: 11px;
+}
+
+body {
+    background-color: #fbfbfb;
+    color: #454545;
+}
+
+h1 {
+    font-family: sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333333;
+    text-align: center;
+}
+
+h2 {
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333333;
+/*    text-transform: uppercase;*/
+    text-align: center;
+}
+
+a:link, a:visited, a:hover {
+    font-family: sans-serif;
+    color: #ff1087;
+    text-decoration: none;
+    font-size: 12px;
+}
+
+/*Source: https://css-tricks.com/examples/hrs/*/
+hr.style-six {
+    border: 0;
+    height: 0;
+    width: 95%;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+p {
+	font-family: sans-serif;
+    font-size: 12px;
+    color: #fffff;
+    text-align: justify;
+}
+
+/* Tooltip stuff, borrowed from:  http://bl.ocks.org/Caged/6476579 */
+.d3-tip {
+	font-family: sans-serif;
+    font-size: 11px;
+	line-height: 1;
+	padding: 12px;
+	background: rgba(0, 0, 0, 0.95);
+	color: #fff;
+	border-radius: 2px;
+}
+
+	/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+	box-sizing: border-box;
+	display: inline;
+	font-size: 10px;
+	width: 100%;
+	line-height: 1;
+	color: rgba(0, 0, 0, 0.9);
+	content: "\25BC";
+	position: absolute;
+	text-align: center;
+	float: left;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+	margin: -1px 0 0 0;
+	top: 100%;
+	left: 0;
+}
+
+.container {
+    width: 1150px;
+    background-color: #fbfbfb;
+    font-family: sans-serif;
+    font-size: 11px;
+    margin: 20px;
+    padding: 10px;
+}
+
+.intro {
+    width: 700px;
+    background-color: #fbfbfb;
+    font-family: sans-serif;
+    font-size: 12px;
+    padding: 6px;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.y_label {
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: 600; 
+    fill: #333333;
+}
+
+.chart_title {
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: 600; 
+    text-transform: uppercase;
+    fill: #333333;
+}
+
+#map {
+	display: inline-block;
+}
+
+#graph {
+	display: inline-block;
+}
+
+#year {
+	color: #ff1087;
+}
+
+</style>
+
+</head>
+<body>
+
+<center>
+<div class="container">
+	<h1> Internet Users (per 100 people) between 1990-2013 </h1>
+	<div class="intro">
+		<p>This map displays the number of Internet users (per 100 people) for countries around the world. In the late 1990s and early 2000s, we see a burst of users in North American and European nations, Australia, Korea, and Japan. Over the time period shown, these areas become increasingly saturated. By 2013, we can see that several areas in Africa and Asia do not yet have the same level of Internet use as other parts of the world. 
+
+		<p>
+		Source: <a href="http://data.worldbank.org/indicator/IT.NET.USER.P2/countries?page=5&display=default">World Bank Data</a></p><br>
+	</div>
+<hr class="style-six">
+<h2>The year is currently <span id="year"></span>.</h2>
+	<div id="map"></div>
+	<div id="graph"></div>
+
+</div>
+</center>
+<script>
+
+var user_map = d3.map();
+// var long_data = [];
+
+queue()
+	.defer(d3.json, "WorldMap.json")
+	.defer(d3.csv, "internet_users.csv", function(d) {
+
+		var country_code = d['Country Code'];
+		user_map.set(country_code, d);
+
+// I tried to convert my wide data to long data here, but for some reason, this triggered an error with my world_json later on ... kept seeing world_json['features'] as undefined. 
+
+		// d.forEach( function(row) {
+			Object.keys(d).forEach( function(colname) {
+
+				console.log(colname)
+				if(colname == "Indicator Name" || colname == "Indicator Code") {
+					return;
+      			}
+      			long_data.push( { "country":d["Country Name"],"country_code":d["Country Code"], "year": colname, "value":d[colname] } );
+
+      			console.log(long_data[50]);
+      		});
+  		// });
+
+  	})
+
+	.await(function(error, world_json, user_data) {
+
+		var countries = world_json['features'];
+
+		var height = 500, width = 900;
+
+		var map_svg = d3.select("#map")
+		            .append("svg")
+		            .attr('height', height)
+		            .attr('width', width);
+
+		var map = map_svg.append("g");
+
+		var projection = d3.geo.equirectangular()
+		              .scale(140)
+		              .translate([width / 2, height / 2]);
+
+		var path = d3.geo.path().projection(projection);
+
+		var color_scale = d3.scale.linear().domain([0, 100]).range(['#ffffe0', '#1dbec0']);
+
+		map.selectAll("path")
+					.data(countries)
+					.enter()
+					.append("path")
+					.attr('class', 'country')
+					.attr('d', path)
+					.style('fill', '#e1e1e1')
+					.style('stroke', '#b4b2b2');
+
+		function update(year) {
+					map.selectAll('.country')
+					.style('fill', function(d) {
+
+						// console.log(user_map.get(d['properties']['ISO3']));
+
+						var country_data = user_map.get(d['properties']['ISO3']);
+
+						if(typeof country_data === 'undefined') {
+								return '#e1e1e1';
+						} else {
+
+							var exports = country_data[year];
+							if(exports === "") {
+
+									var current_color = d3.select(this).style('fill');
+									return current_color;
+
+							} else {
+							
+									return color_scale(exports);
+							}
+						}
+					})
+		}
+
+
+		// Add Line Graph
+
+// Source: https://gist.github.com/trtg/3922684 + your hurricane path code.. 
+
+	d3.selection.prototype.moveToFront = function() {
+	  return this.each(function(){
+	  this.parentNode.appendChild(this);
+	  });
+	};
+
+
+	// Margins & SVG sizes
+
+	var height = 400
+	var width = 700
+
+	var margins = { 'top': 70, 'bottom': 50, 'left': 120, 'right': 100, };
+
+	var svg_height = height + margins.top + margins.bottom 
+	var svg_width = width + margins.left + margins.right
+
+	// Scales
+
+	var xscale = d3.scale.linear().domain([1990,2013]).range([0,width]);
+	var yscale = d3.scale.linear().domain([0,100]).range([height, 0]);
+
+	// Axes
+
+	var yAxis = d3.svg.axis().scale(yscale).orient("left");
+
+	var xAxis = d3.svg.axis()
+	            .scale(xscale)
+	            .orient("bottom")
+	            .tickFormat(d3.format('d'));
+
+	function ready(error, datapoints) {
+	 
+	    // Filtering datapoints for: 
+	    datapoints = datapoints.filter( function(d) {
+	            return d['Value'] != NaN;
+	    });
+
+	    // Converting to numbers... 
+	    datapoints.forEach( function(d){
+	        d['Year'] = +d['Year'];
+	        d['Value'] = +d['Value']; 
+	    });
+
+	    datapoints = datapoints.filter( function(d) {
+	            if (d['Year'] > 1989 && d['Year'] < 2014) {
+	            	return d['Value']
+	            }
+	    });
+
+	    // Makin' things, appendin' things
+
+	// THIS STUFF CAN BE OUTSIDE THE READY FUNCTION 
+
+	    var svg = d3.select("#graph").append("svg")
+	            .attr("width", svg_width)
+	            .attr("height", svg_height);
+
+	    var chart = svg.append('g').attr('transform', 'translate(' + margins.left + ',' + margins.top + ')');
+
+	    chart.append("g")
+	            .attr("class", "y-axis axis")
+	            .call(yAxis);
+
+	    chart.append("g")
+	            .attr("class", "x-axis axis")
+	            .attr("transform", "translate(0," + height + ")")
+	            .call(xAxis);
+
+	// THIS STUFF CAN BE OUTSIDE THE READY FUNCTION, I THINK
+
+	    // Infobox for hovering over lines
+
+	    var infobox = svg.append('g').append('text')
+	            .attr('y', 35)
+	            .attr('x', 445)
+	            .attr("class", "infobox")
+	            .style('visibility', 'hidden')
+	            .style('fill', "#ff0067")
+	            .style('font-family', "sans-serif")
+	            .style('font-size', "12px")
+	            .style('font-weight', 600)
+	            .style('text-transform', "uppercase")
+	            .attr('text-anchor', 'middle');
+
+	    // Tooltip for hovering over circles
+
+	    var tip = d3.tip()
+	            .attr('class', 'd3-tip')
+	            .offset([-15, 0])
+	            .html(function(d) {
+	                return "<strong>" + d['Country Name'] + " (" + d['Year'] + "): </strong><span style='color:#ff0067'>"+ Math.round(d['Value'])+" internet users per 100 people</span><br>";
+	            });
+
+	    var line = d3.svg.line()
+	            .interpolate("monotone")
+	            .x(function(d) {
+	                return xscale(d['Year']);
+	            })
+	            .y(function(d) {
+	                return yscale(d['Value']);
+	            });
+
+	    var grouped = d3.nest()
+	            .key(function(d) {
+	                return d['Country Name'];
+	            })
+	            .entries(datapoints);
+
+	    var lines_area = chart.append('g');
+
+	    var circles = chart.selectAll('circle')
+	            .data(datapoints)
+	            .enter()
+
+	    lines_area.selectAll('path')
+	            .data(grouped)
+	            // .sort( function(a,b) {
+	            // 	if (d['key'] == "World") {
+	            // 		return 1;
+	            // 	}  else {
+	            // 		return 0;
+	            // 	}
+	            // })
+	            .enter()
+	            .append('path')
+	            .attr("d", function(d) {
+	                return line(d['values']);
+	            })
+	            .style("fill", "none")
+	            .style("stroke", function(d) {
+	            	if (d['key'] == "World") {
+	            		d3.select(this).moveToFront();
+	            		return "#ff0067";
+	            	} else {
+	            		return "#c8c8c8";
+	            	}
+	        	})
+	            .style('stroke-width', 1)
+	            .call(tip)
+	            .on('mouseover', function(d){ 
+	                info_text = d['key'];
+	                d3.select(this).style('stroke','orange').style('stroke-width', 4).moveToFront();
+	                d3.select(".infobox").text(info_text).style('visibility', 'visible');
+	                })
+	            .on('mouseout', function(d){
+	            	if (d['key'] == "World") {
+	                    tip.hide(d.values.country);
+	                    d3.select(this).style('stroke','#ff0067').style('stroke-width', 1).moveToFront();;
+	                    d3.select(".infobox").text(" ").style('visibility', 'hidden');
+	                } else {
+	                    tip.hide(d.values.country);
+	                    d3.select(this).style('stroke','#c8c8c8').style('stroke-width', 1);
+	                    d3.select(".infobox").text(" ").style('visibility', 'hidden');
+	                }
+	                });
+
+	    var circles = chart.selectAll('circle')
+	            .data(datapoints)
+	            .enter()
+	            .append('circle')
+	            .attr('r', 2)
+	            .attr('cx', function(d) {
+	                return xscale(d['Year']);
+	            })
+	            .attr('cy', function(d) {
+	                return yscale(d['Value']);
+	            })
+	            .style("fill", function(d) {
+	            	if (d['Country Name'] == "World") {
+	            		d3.select(this).moveToFront();
+	            		return "#ff0067";
+	            	} else {
+	            		return "#c8c8c8";
+	            	}
+	            })
+	            .call(tip)
+	            .on('mouseover', function(d){
+	                info_text = d.country; 
+	                tip.show(d); 
+	                d3.select(this).style('fill','orange').attr('r', 5).moveToFront();
+	                d3.select(".infobox").text(info_text).style('visibility', 'visible');
+	            })
+	            .on('mouseout', function(d){
+	            	if (d['Country Name'] == "World") {
+		                tip.hide(d);
+		                d3.select(this).style('fill','#ff0067').attr('r', 2).moveToFront();
+		                d3.select(".infobox").text(" ").style('visibility', 'hidden');
+		            } else {
+		                tip.hide(d);
+		                d3.select(this).style('fill','#c8c8c8').attr('r', 2);
+		                d3.select(".infobox").text(" ").style('visibility', 'hidden');
+		            }
+	            });
+
+	    // Axes Labels
+
+	    var y_label = svg.append('text')
+	        .attr("class", "y_label")
+	        .text("Number of Internet Users Per 100 People")
+	        .attr('y', 60)
+	        .attr('x', -270)
+	        .attr('text-anchor', 'middle')
+	        .attr('transform', "rotate(-90)");
+
+	    var chart_title = svg.append('text')
+	        .attr("class", "chart_title")
+	        .text("Internet Users by Country (1989-2014)")
+	        .attr('y', 20)
+	        .attr('x', 445)
+	        .attr('text-anchor', 'middle');
+
+	};
+
+	// Let's go, let's go
+	 
+	d3.csv('melted2.csv', ready); 
+
+	var start_year = 1989;
+	var current_year = start_year;
+
+	setInterval(function() {
+		current_year++;
+
+		if(current_year > 2013) {
+	  			// reset the year
+	  			current_year = start_year;
+	  			// reset the map colors
+	  			map.selectAll(".country").style("fill", '#e1e1e1');
+		}
+
+		d3.select("#year").text(current_year);
+		update(current_year);
+	}, 1000);
+
+	});
+
+</script>
+</body>
+</html>

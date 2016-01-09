@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>More charts</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<!-- Sooo, I'm going to try out Tooltips (https://github.com/Caged/d3-tip) instead of the infobox div we did in class.. -->
+
+	<style>
+
+	body {
+		background-color: #E3E3E3;
+	}
+    .xaxis path,
+    .xaxis line {
+        fill: none;
+        stroke: black;
+        shape-rendering: crispEdges;
+    }
+
+    text {
+        font-family: sans-serif;
+        font-size: 13px;
+    }
+
+    text.value {
+	    font-size: 12px;
+    }
+
+    text.state {
+	    font-size: 12px;
+	    font-weight: 600;
+    }
+
+    text.food_label, 
+    text.x_label, text.y_label {
+	    font-size: 12px;
+	    font-weight: 600;
+    }
+
+    .xaxis text {
+        font-family: sans-serif;
+        font-size: 11px;
+    }
+
+    h1 {
+        font-family: sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+
+    }
+
+    p {
+        font-family: sans-serif;
+        font-size: 13px;
+        font-weight: 400;
+
+    }
+
+    a:link, a:visited, a:hover {
+		font-family: sans-serif;
+		color: #0055a6;
+		font-weight: 600;
+		text-decoration: none;
+	}
+
+    circle {
+		fill: #1dbec0;
+    	opacity: 0.7;
+    	r: 20;
+    	-moz-transition: all 0.3s;
+		-o-transition: all 0.3s;
+		-webkit-transition: all 0.3s;
+		transition: all 0.3s
+    }
+
+    circle:hover {
+		fill: #fabd29;
+		opacity: 1.0;
+		r: 30;
+	
+	}
+
+	/* Tooltip stuff, borrowed from:  http://bl.ocks.org/Caged/6476579 */
+	.d3-tip {
+		font-family: sans-serif;
+        font-size: 11px;
+		line-height: 1;
+		padding: 12px;
+		background: rgba(0, 0, 0, 0.8);
+		color: #fff;
+		border-radius: 2px;
+	}
+
+	/* Creates a small triangle extender for the tooltip */
+	.d3-tip:after {
+		box-sizing: border-box;
+		display: inline;
+		font-size: 10px;
+		width: 100%;
+		line-height: 1;
+		color: rgba(0, 0, 0, 0.9);
+		content: "\25BC";
+		position: absolute;
+		text-align: center;
+	}
+
+	/* Style northward tooltips differently */
+	.d3-tip.n:after {
+		margin: -1px 0 0 0;
+		top: 100%;
+		left: 0;
+	}
+
+    </style>
+
+</head>
+<body>
+
+	<center>
+
+		<br><br><br>
+		<h1>Best Brunches in Manhattan (<a href="https://www.zagat.com/l/new-york-city/the-10-best-brunches-in-nyc">According to Zagat</a>)</h1>
+		<svg class="food_rating" height="400"></svg><br><br><br><br><br>
+
+		<h1>Prices of the Most Popular Dishes at Each Restaurant</h1><br>
+		<svg class="popdishes" width="520"></svg><br><br><br>
+
+	</center>
+
+<script>
+
+	var data = [{'restaurant': 'Locanda Verde', 'zagat_food': 24, 'cost': 64, 'rk_apt_dist': 39, 'pic': 1, 'popular_dish' : 'Lemon Ricotta Pancakes', 'popprice': 17}, 
+		{'restaurant': "Norma's", 'zagat_food': 24, 'cost': 47, 'rk_apt_dist': 20, 'pic': 2, 'popular_dish' : 'Crunchy French Toast', 'popprice': 25}, 
+		{'restaurant': "Jacob's Pickles", 'zagat_food': 21, 'cost': 34, 'rk_apt_dist': 22, 'pic': 3, 'popular_dish' : 'Biscuits and Gravy', 'popprice': 8}, 
+		{'restaurant': 'Cafe Cluny', 'zagat_food': 21, 'cost': 52, 'rk_apt_dist': 33, 'pic': 4, 'popular_dish' : 'Short-Rib Hash', 'popprice': 26}, 
+		{'restaurant': 'Stanton Social', 'zagat_food': 24, 'cost': 58, 'rk_apt_dist': 36, 'pic': 5, 'popular_dish' : 'French Onion Soup Dumplings', 'popprice': 15}, 
+		{'restaurant': 'Balaboosta', 'zagat_food': 23, 'cost': 48, 'rk_apt_dist': 29, 'pic': 6, 'popular_dish' : 'Shakshouka', 'popprice': 15}, 
+		{'restaurant': 'Clinton St. Baking Company', 'zagat_food': 24, 'cost': 28, 'rk_apt_dist': 37, 'pic': 7, 'popular_dish' : 'Blueberry Pancakes with Maple Butter', 'popprice': 14}, 
+		{'restaurant': 'Balthazar', 'zagat_food': 24, 'cost': 61, 'rk_apt_dist': 28, 'pic': 8, 'popular_dish' : 'Eggs Norwegian', 'popprice': 29}, 
+		{'restaurant': 'Westville East', 'zagat_food': 23, 'cost': 28, 'rk_apt_dist': 38, 'pic': 9, 'popular_dish' : 'Eggs Scramble Sandwich', 'popprice': 9}, 
+		{'restaurant': 'Cafe Mogador', 'zagat_food': 24, 'cost': 30, 'rk_apt_dist': 39, 'pic': 10, 'popular_dish' : 'Moroccan Benedict', 'popprice': 14}
+		];
+
+// 1. Scatterplot 
+
+	var width = 500;
+	var height = 500;
+	var left_padding = 50;
+	var bottom_padding = 50;
+
+	var xmax_value = d3.max(data, function(d) { return d['cost']; });
+	var ymax_value = d3.max(data, function(d) { return d['rk_apt_dist']; });
+
+	var xscale = d3.scale.linear()
+		.domain([0, xmax_value])
+		.range([0, width - left_padding - 50]);
+
+	var yscale = d3.scale.linear()
+		.domain([15, ymax_value])
+		.range([0, height - bottom_padding - 30]);
+
+	var yaxis_scale = d3.scale.linear()
+		.domain([15, ymax_value])
+		.range([height - bottom_padding - 20, 0]);
+
+	var tip = d3.tip()
+		.attr('class', 'd3-tip')
+		.offset([-10, 0])
+		.html(function(d) {
+		return "<strong>" + d['restaurant'] + "</strong><br>Zagat Rating: <span style='color:#fabd29'>" + d['zagat_food'] + "</span><br>Popular Dish: <span style='color:#fabd29'>" + d['popular_dish'] + "</span>";
+  		});
+
+	var fundvempl_chart = d3.select(".food_rating").attr('height', height).attr('width', width);
+
+	fundvempl_chart.call(tip);
+
+	var fundvempl_circles = fundvempl_chart.selectAll("circle")
+		.data(data)
+		.enter()
+		.append("circle")
+        .attr('cx', function(d) {
+          	return xscale(d['cost']) + left_padding;
+      		})
+        .attr('cy', function(d) {
+          	return height - bottom_padding - yscale(d['rk_apt_dist']);
+      		})
+        .on('mouseover', tip.show)
+      	.on('mouseout', tip.hide);
+
+	var labels = fundvempl_chart.selectAll('text.food_label')
+		.data(data)
+		.enter()
+		.append('text')
+		.attr("class", "food_label")
+		.text(function(d) {
+			return d['restaurant'];
+			})
+        .attr('x', function(d) {
+          	return xscale(d['cost']) + left_padding;
+      		})
+        .attr('y', function(d) {
+          	return height - bottom_padding - yscale(d['rk_apt_dist']) + 3;
+      		})
+		.attr('text-anchor', 'middle');
+
+	var yaxis = d3.svg.axis()
+        .orient('left')
+        .ticks(5)
+        .scale(yaxis_scale);
+
+	fundvempl_chart.append('g')
+		.attr('transform', 'translate(50,30)')
+		.attr('class', 'xaxis')
+		.call(yaxis);
+
+	var xaxis = d3.svg.axis()
+        .orient('bottom')
+        .ticks(5)
+        .tickFormat(function(d) { return "$"+d; })
+        .scale(xscale);
+
+	fundvempl_chart.append('g')
+		.attr('transform', 'translate(50,460)')
+		.attr('class', 'xaxis')
+		.call(xaxis);
+
+	var x_label = fundvempl_chart.append('text')
+		.attr("class", "x_label")
+		.text("Average Cost of Meal")
+        .attr('x', (width) / 2)
+        .attr('y', height - bottom_padding + 47)
+		.attr('text-anchor', 'middle');
+
+	var y_label = fundvempl_chart.append('text')
+		.attr("class", "y_label")
+		.text("How Many Minutes It'll Take Rashida to Get There by Subway")
+        .attr('y', 10)
+        .attr('x', -240)
+		.attr('text-anchor', 'middle')
+		.attr('transform', "rotate(-90)");
+
+// 2. A bar chart of the most popular dishes... 
+	var bottom_padding = 200;
+	var height = 525;
+	var max_value = d3.max(data, function(d) { return d['popprice']; });
+
+	var scale = d3.scale.linear()
+		.domain([0, max_value])
+		.range([0, height - bottom_padding - 20]);
+
+	var yscale = d3.scale.linear()
+		.domain([0, max_value])
+		.range([height - bottom_padding - 20, 0]);
+
+	var tip = d3.tip()
+		.attr('class', 'd3-tip')
+		.offset([-10, 0])
+		.html(function(d) {
+		return "<strong>" + d['restaurant'] + "</strong><br>Zagat Rating: <span style='color:#fabd29'>" + d['zagat_food'] + "</span><br>Popular Dish: <span style='color:#fabd29'>" + d['popular_dish'] + "</span>";
+  		});
+
+	var fedfunding_chart = d3.select(".popdishes").attr('height', height);
+
+	fedfunding_chart.call(tip);
+
+	var fedfunding_rectangles = fedfunding_chart.selectAll("rect")
+		.data(data)
+		.enter()
+		.append("rect")
+        .attr('x', function(d, i) {
+          	return i * 40 + 90;
+      		})
+        .attr('y', function(d, i) {
+        	return height - bottom_padding - scale(d['popprice']);
+        	})
+        .attr('width', 25)
+        .style('fill', '#abbd2b')
+        .attr('height', function(d) {
+        	return scale(d['popprice']);
+        })	
+        .on('mouseover', function(d, i) {
+  			tip.show(d);
+			d3.select(this).style('fill', '#fabd29').attr('width', 30).attr('x', i * 40 + 88);
+			})
+		.on('mouseout', function(d, i) {
+			tip.hide(d);
+			d3.select(this).style('fill', '#abbd2b').attr('width', 30).attr('x', i * 40 + 90);
+			});
+
+	var labels = fedfunding_chart.selectAll('text.state')
+		.data(data)
+		.enter()
+		.append('text')
+		.attr("class", "state")
+		.text(function(d) {
+			return d['restaurant'];
+			})
+		.attr('x', -((height - bottom_padding) + 10))
+        .attr('y', function(d, i) {
+          	return i * 40 + 107;
+      		})
+		.attr('text-anchor', 'end')
+		.attr('transform', "rotate(-90)");
+
+
+	var yaxis = d3.svg.axis()
+        .orient('left')
+        .ticks(5)
+        .tickFormat(function(d) { return "$"+d; })
+        .scale(yscale);
+
+	fedfunding_chart.append('g')
+		.attr('transform', 'translate(70,20)')
+		.attr('class', 'xaxis')
+		.call(yaxis);
+
+	var index_labels = fedfunding_chart.selectAll('text.value')
+		.data(data)
+		.enter()
+		.append('text')
+		.attr("class", "value")
+		.text(function(d) {
+			return "$"+d['popprice'];
+			})
+		.attr('y', function(d) {
+			return (height - bottom_padding - scale(d['popprice'])) - 4;
+			})
+        .attr('x', function(d, i) {
+          	return i * 40 + 102;
+      		})
+		.attr('text-anchor', 'middle');
+
+	var y_label = fedfunding_chart.append('text')
+		.attr("class", "y_label")
+		.text("Price of Each Dish")
+        .attr('y', 15)
+        .attr('x', -170)
+		.attr('text-anchor', 'middle')
+		.attr('transform', "rotate(-90)");
+
+</script>
+
+</body>
+</html>

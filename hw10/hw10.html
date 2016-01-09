@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Housing Choices</title>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js'></script>  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script> 
+
+<style>
+
+body {
+    background-color: #fdf9f9;
+    color: #454545;
+}
+
+h1 {
+    font-family: sans-serif;
+    font-size: 18px;
+    color: #333333;
+    text-align: center;
+}
+
+h2 {
+    font-family: sans-serif;
+    font-size: 12px;
+    color: #333333;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.container {
+    width: 950px;
+    background-color: #fdf9f9;
+    font-family: sans-serif;
+    font-size: 11px;
+    margin: 20px;
+    padding: 10px;
+}
+
+.caption {
+    width: 400px;
+    background-color: #fdf9f9;
+    font-family: sans-serif;
+    font-size: 11px;
+    padding: 6px;
+    text-align: left;
+}
+
+.intro {
+    width: 700px;
+    background-color: #fdf9f9;
+    font-family: sans-serif;
+    font-size: 12px;
+    padding: 6px;
+    text-align: left;
+}
+
+/*Source: https://css-tricks.com/examples/hrs/*/
+hr.style-six {
+    border: 0;
+    height: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.d3-tip {
+    font-family: sans-serif;
+    font-size: 11px;
+    line-height: 1;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.85);
+    color: #000;
+    border-radius: 1px;
+    text-align: center;
+}
+
+</style>
+
+</head>
+<body>
+
+<center>
+<div class="container">
+
+    <div class="intro">
+         <h1>Housing Choices for Married & Non-Family Households</h1><br>
+        <span>The housing markets in various parts of the country yield different housing choices amongst married and non-married/non-family households. Higher proportions are denoted in pink, while lower proportions are denoted in green. This data represents 817 of over 3,000 counties in the United States. </span>
+    </div>
+    <br><br>
+    <hr class="style-six">
+    <br><br>
+    <h2>Proportion of Married Households in Renter-Occupied Housing Units</h2>
+
+    <div id="map"></div>
+    <div class="caption">
+        <span> This map illustrates that the West Coast sees a greater proportion of married households who choose to rent as compared to the proportions seen in the eastern half of the country -- with a few notable exceptions: counties near New York City and counties in Florida.</span>
+    </div>
+    <br><br>
+
+    <div class="caption">
+        <span></span>
+    </div>
+
+    <h2>Proportion of Non-Family Households in Owner-Occupied Housing Units</h2>
+    <div id="map2"></div>
+
+    <div class="caption">
+        <span>This map looks at the proportion of non-family households in owner-occupied housing units. Florida, Arizona, and New Mexico experience high proportions of such households -- it is possible that the retired community represents some of these households, but the finding bears further investigation.  </span>
+    </div>
+    </div>
+
+
+</center>
+
+    <script>
+
+    function combineData(geojson_data, csv_data, geojson_key, csv_key) {
+        geojson_data['features'].forEach( function(d_json) {
+            csv_data.forEach( function(d_csv) {
+                if(d_json['properties'][geojson_key] == d_csv[csv_key]) { Object.keys(d_csv).forEach( function(key) { d_json['properties'][key] = d_csv[key]; }); }
+            });
+        });
+    };
+
+    queue()
+        .defer(d3.json, "gz_2010_us_050_00_5m.json")
+        .defer(d3.csv, "housing_units.csv")
+        .await( function(error, data, csv_data) {
+
+    combineData(data, csv_data, "GEO_ID", "GEO.id");
+
+
+    var counties = data['features'];
+
+    var svg_height = 500, svg_width = 900;
+    var margins = 0;
+    var height = svg_height - margins * 2;
+    var width = svg_width - margins * 2;
+      
+// Map 1: Married Couples In Renter-Occupied Units 
+
+    var svg = d3.select("#map").append('svg')
+            .attr('height', svg_height)
+            .attr('width', svg_width); 
+
+    var map = svg.append("g").attr("transform", "translate(" + margins + "," + margins + ")");
+
+    var projection = d3.geo.albersUsa()
+                            .scale(1000)
+                            .translate([width / 2, height / 2]);
+    var path = d3.geo.path().projection(projection);
+
+
+    var max_val = d3.max(counties, function(d) {
+        return d['properties']['HC02_EST_VC33'];
+    });
+
+    //  d3.max function is giving back very low value for max_val (9.9)
+    console.log(max_val);
+
+    var median = d3.median(counties, function(d) {
+        return d['properties']['HC02_EST_VC33'];
+    });
+
+    var mean = d3.mean(counties, function(d) {
+        return d['properties']['HC02_EST_VC33'];
+    });
+
+    var all_areas = counties.map( function(d) {
+      return d['properties']['HC02_EST_VC33'];
+    });
+
+    // hard coding max_val at 68, as per data... 
+    var color_scale = d3.scale.linear()
+        .domain([0, median, 68])
+        .range(['#5aaf8c', '#ffffe0', '#d84765']);
+
+
+    // Okay, my color scheme needs a key... 
+
+    var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-15, 0])
+    .html(function(d) {
+        return "<strong>" + d['properties']['GEO.display-label'] + " </strong><br><span style='color:#007cbc'>"+ d['properties']['HC02_EST_VC33']+" </span><br>";
+    });
+
+    map.selectAll("path")
+        .data(counties)
+        .enter()
+        .append("path")
+        .attr('d', path)
+        .style('fill', "#fdf9f9")
+        .style('fill', function(d) {
+          return color_scale(d['properties']['HC02_EST_VC33']);
+        })
+        .style('stroke', '#333333')
+        .style('stroke-width', 0.2)
+        .call(tip)
+        .on('mouseover', function(d){
+            if (d['properties']['GEO.display-label'] != undefined) {
+                tip.show(d);
+            };
+        })
+        .on('mouseout', function(d){
+                tip.hide(d);    
+        });
+
+
+// Map 2: Non-Family Household in Owner Occupied Units 
+
+    var svg = d3.select("#map2").append('svg')
+                .attr('height', svg_height)
+                .attr('width', svg_width); // etc etc
+
+    var map = svg.append("g").attr("transform", "translate(" + margins + "," + margins + ")");
+
+    var projection = d3.geo.albersUsa()
+                            .scale(1000)
+                            .translate([width / 2, height / 2]);
+    var path = d3.geo.path().projection(projection);
+
+
+    var max_val2 = d3.max(counties, function(d) {
+        return d['properties']['HC05_EST_VC32'];
+    });
+
+    console.log(max_val2);
+
+    var median = d3.median(counties, function(d) {
+        return d['properties']['HC05_EST_VC32'];
+    });
+
+    // to avoid outlier issue...
+
+    var mean = d3.mean(counties, function(d) {
+        return d['properties']['HC05_EST_VC32'];
+    });
+
+    var all_areas2 = counties.map( function(d) {
+      return d['properties']['HC05_EST_VC32'];
+    });
+
+    var color_scale = d3.scale.linear()
+        .domain([0, median, max_val2])
+        .range(['#5aaf8c', '#ffffe0', '#d84765']);
+
+    var tip2 = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-15, 0])
+    .html(function(d) {
+        return "<strong>" + d['properties']['GEO.display-label'] + " </strong><br><span style='color:#007cbc'>"+ d['properties']['HC05_EST_VC32']+" </span><br>";
+    });
+
+    map.selectAll("path")
+        .data(counties)
+        .enter()
+        .append("path")
+        .attr('d', path)
+        .style('fill', "#fdf9f9")
+        .style('fill', function(d) {
+          return color_scale(d['properties']['HC05_EST_VC32']);
+        })
+        .style('stroke', '#333333')
+        .style('stroke-width', 0.2)
+        .call(tip2)
+        .on('mouseover', function(d){
+            if (d['properties']['GEO.display-label'] != undefined) {
+                tip2.show(d);
+            };
+        })
+        .on('mouseout', function(d){
+                tip2.hide(d);    
+        });
+
+
+
+  });
+  </script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<html>
+<head>
+  <title>Refugees by Country of Origin</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+
+<style>
+
+body {
+    background-color: #F0ECEC;
+    color: #454545;
+}
+
+.container {
+    margin-top: 50px;
+    color: #454545;
+}
+
+.caption {
+    width: 600px;
+    background-color: #FFF;
+    font-family: sans-serif;
+    font-size: 11px;
+    padding: 6px;
+    text-align: left;
+}
+
+a:link, a:visited, a:hover {
+    font-family: sans-serif;
+    color: #007cbc;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+    fill: #454545;
+}
+
+text {
+    font-family: sans-serif;
+    font-size: 11px;
+    color: #454545;
+}
+
+.y_label {
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: 600; 
+    fill: #454545;
+}
+
+.chart_title {
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: 600; 
+    text-transform: uppercase;
+    fill: #454545;
+}
+
+/* Tooltip styling, borrowed from:  http://bl.ocks.org/Caged/6476579 */
+.d3-tip {
+    font-family: sans-serif;
+    font-size: 11px;
+    line-height: 1;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.85);
+    color: #000;
+    border-radius: 1px;
+    text-align: center;
+}
+
+/* Creates a small triangle extender for the tooltip */
+/*.d3-tip:after {
+    box-sizing: border-box;
+    display: inline;
+    font-size: 10px;
+    width: 100%;
+    line-height: 1;
+    color: rgba(0, 0, 0, 0.95);
+    content: "\25BC";
+    position: absolute;
+    text-align: center;
+    float: left;
+}*/
+
+/* Style northward tooltips differently */
+/*.d3-tip.n:after {
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
+}*/
+
+</style>
+</head>
+
+<body>
+
+<center>
+
+<div class="container">
+
+    <div class="chart"></div>
+    <div class="caption">
+        <span>This chart displays the number of refugees to have fled their home countries, or countries of origin, for each year between 1990 and 2014 (inclusive). The home countries have been limited to the top twenty countries to have experienced the highest cumulative count of refugees in this time period. As evidenced in this figure, Afghanistan experienced the highest number of refugees almost every year -- it was recently eclipsed by Syria in 2014. The peak in Afghanistan's refugee count in the early 1990s can be attributed to the Afghan Civil War (1989-92). Afghanistan also saw an increase in refugees between 1999 and 2001, presumably as a result of Taliban activity and warfare (and ultimately, U.S. military involvement). 
+
+        <br><br>The data is provided by the World Bank, as a part of their World Development Indicators dataset (<a href="http://data.worldbank.org/indicator/SM.POP.REFG.OR)">source</a>). The World Bank compiled the data from several sources, including the U.N. High Commissioner for Refugees Statistical Yearbook and the U.N. Relief and Works Agency.</span>
+    </div>
+
+
+</div>
+</center>
+<script>
+
+// Source: https://gist.github.com/trtg/3922684 + your hurricane path code.. 
+
+d3.selection.prototype.moveToFront = function() {
+  return this.each(function(){
+  this.parentNode.appendChild(this);
+  });
+};
+
+
+// Margins & SVG sizes
+
+var height = 400
+var width = 700
+
+var margins = { 'top': 70, 'bottom': 50, 'left': 100, 'right': 100, };
+
+var svg_height = height + margins.top + margins.bottom 
+var svg_width = width + margins.left + margins.right
+
+// Scales
+
+var xscale = d3.scale.linear().domain([1990,2014]).range([0,width]);
+var yscale = d3.scale.linear().domain([0,6500000]).range([height, 0]);
+
+// Axes
+
+var yAxis = d3.svg.axis().scale(yscale).orient("left");
+
+var xAxis = d3.svg.axis()
+            .scale(xscale)
+            .orient("bottom")
+            .tickFormat(d3.format('d'));
+
+// Function to format numbers for tooltip, source: http://blog.tompawlak.org/number-currency-formatting-javascript
+
+function formatNumber (num) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+}
+
+// Ready function to make all the things 
+
+function ready(error, datapoints) {
+ 
+    // Filtering datapoints for: 
+    datapoints = datapoints.filter( function(d) {
+            return d['refugees'] != NaN;
+    });
+
+    // Converting to numbers... 
+    datapoints.forEach( function(d){
+        d['year'] = +d['year'];
+        d['refugees'] = +d['refugees']; 
+    });
+
+    // Makin' things, appendin' things
+
+// THIS STUFF CAN BE OUTSIDE THE READY FUNCTION 
+
+    var svg = d3.select(".chart").append("svg")
+            .attr("width", svg_width)
+            .attr("height", svg_height);
+
+    var chart = svg.append('g').attr('transform', 'translate(' + margins.left + ',' + margins.top + ')');
+
+    chart.append("g")
+            .attr("class", "y-axis axis")
+            .call(yAxis);
+
+    chart.append("g")
+            .attr("class", "x-axis axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+// THIS STUFF CAN BE OUTSIDE THE READY FUNCTION, I THINK
+
+    // Infobox for hovering over lines
+
+    var infobox = svg.append('g').append('text')
+            .attr('y', 35)
+            .attr('x', 445)
+            .attr("class", "infobox")
+            .style('visibility', 'hidden')
+            .style('fill', "#007cbc")
+            .style('font-family', "sans-serif")
+            .style('font-size', "12px")
+            .style('font-weight', 600)
+            .style('text-transform', "uppercase")
+            .attr('text-anchor', 'middle');
+
+    // Tooltip for hovering over circles
+
+    var tip = d3.tip()
+            .attr('class', 'd3-tip')
+            .offset([-15, 0])
+            .html(function(d) {
+                return "<strong>" + d['country'] + " (" + d['year'] + "): </strong><span style='color:#007cbc'>"+ formatNumber(d['refugees'])+" refugees</span><br>";
+            });
+
+    var line = d3.svg.line()
+            .interpolate("monotone")
+            .x(function(d) {
+                return xscale(d['year']);
+            })
+            .y(function(d) {
+                return yscale(d['refugees']);
+            });
+
+    var grouped = d3.nest()
+            .key(function(d) {
+                return d['country'];
+            })
+            .entries(datapoints);
+
+    var lines_area = chart.append('g');
+
+    var circles = chart.selectAll('circle')
+            .data(datapoints)
+            .enter()
+
+    lines_area.selectAll('path')
+            .data(grouped)
+            .enter()
+            .append('path')
+            .attr("d", function(d) {
+                return line(d['values']);
+            })
+            .style("fill", "none")
+            .style("stroke", "#c8c8c8")
+            .style('stroke-width', 1)
+            .call(tip)
+            .on('mouseover', function(d){ 
+                info_text = d['key'];
+                d3.select(this).style('stroke','orange').style('stroke-width', 4).moveToFront();
+                d3.select(".infobox").text(info_text).style('visibility', 'visible');
+                })
+            .on('mouseout', function(d){
+                    tip.hide(d.values.country);
+                    d3.select(this).style('stroke','#c8c8c8').style('stroke-width', 1);
+                    d3.select(".infobox").text(" ").style('visibility', 'hidden');
+                });
+
+    var circles = chart.selectAll('circle')
+            .data(datapoints)
+            .enter()
+            .append('circle')
+            .attr('r', 2)
+            .attr('cx', function(d) {
+                return xscale(d['year']);
+            })
+            .attr('cy', function(d) {
+                return yscale(d['refugees']);
+            })
+            .style('fill', "#c8c8c8")
+            .call(tip)
+            .on('mouseover', function(d){
+                info_text = d.country; 
+                tip.show(d); 
+                console.log(datapoints)
+                d3.select(this).style('fill','orange').attr('r', 5).moveToFront();
+                d3.select(".infobox").text(info_text).style('visibility', 'visible');
+            })
+            .on('mouseout', function(d){
+                tip.hide(d);
+                d3.select(this).style('fill','#c8c8c8').attr('r', 2);
+                d3.select(".infobox").text(" ").style('visibility', 'hidden');
+            });
+
+    // Axes Labels
+
+    var y_label = svg.append('text')
+        .attr("class", "y_label")
+        .text("Number of Refugees")
+        .attr('y', 11)
+        .attr('x', -270)
+        .attr('text-anchor', 'middle')
+        .attr('transform', "rotate(-90)");
+
+    var chart_title = svg.append('text')
+        .attr("class", "chart_title")
+        .text("Refugees by Country of Origin (1990-2014)")
+        .attr('y', 20)
+        .attr('x', 445)
+        .attr('text-anchor', 'middle');
+
+};
+
+// Let's go, let's go
+ 
+d3.csv('melted.csv', ready); 
+
+</script>
+
+</body>
+</html>
