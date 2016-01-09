@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Federal Funding Stuff</title>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+
+	<style>
+    .xaxis path,
+    .xaxis line {
+        fill: none;
+        stroke: black;
+        shape-rendering: crispEdges;
+    }
+
+    text {
+        font-family: sans-serif;
+        font-size: 13px;
+    }
+
+    text.value {
+	    font-size: 10px;
+    }
+
+    text.state_label {
+	    font-size: 10px;
+    }
+
+    .xaxis text {
+        font-family: sans-serif;
+        font-size: 11px;
+    }
+
+    h1 {
+        font-family: sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    </style>
+
+</head>
+
+<body>
+
+	<center>
+		<br><br><br>
+		<h1>1. A horizontal bar chart of return</h1>
+	<svg class="return" height="400"></svg><br><br>
+		<h1>2. A bar chart of fed_funding_pct</h1><br>
+	<svg class="federal_funding" width="420"></svg><br><br><br>
+		<h1>3. A scatterplot</h1><br>
+	<svg class="funding_v_empl"></svg><br><br>
+		<h1>4. A scatterplot copy, with axes</h1><br>
+	<svg class="funding_v_empl_v2"></svg>
+	</center>
+
+	<script>
+	var states = [ 
+		{ 'name': 'New Mexico', 'return': 2.19, 'fed_funding_pct': 37.89, 'fed_empl': 18.50, 'civ_empl': 9.03, 'affiliation': 'Democrat'},
+		{ 'name': 'Mississippi', 'return': 2.34, 'fed_funding_pct': 43.68, 'fed_empl': 10.61, 'civ_empl': 3.41, 'affiliation': 'Republican'},
+		{ 'name': 'South Carolina', 'return': 5.38, 'fed_funding_pct': 32.50, 'fed_empl': 12.74, 'civ_empl': 2.42, 'affiliation': 'Republican'},
+		{ 'name': 'Hawaii', 'return': 1.46, 'fed_funding_pct': 21.54, 'fed_empl': 54.37, 'civ_empl': 4.46, 'affiliation': 'Democrat'},
+		{ 'name': 'Maryland', 'return': 1.02, 'fed_funding_pct': 29.69, 'fed_empl': 27.87, 'civ_empl': 15.19, 'affiliation': 'Democrat'},
+		{ 'name': 'Louisiana', 'return': 1.37, 'fed_funding_pct': 42.21, 'fed_empl': 8.40, 'civ_empl': 3.15, 'affiliation': 'Swing'},
+		{ 'name': 'New York', 'return': 0.58, 'fed_funding_pct': 43.39, 'fed_empl': 4.69, 'civ_empl': 2.86, 'affiliation': 'Democrat'},
+		{ 'name': 'Alaska', 'return': 0.96, 'fed_funding_pct': 22.43, 'fed_empl': 48.29, 'civ_empl': 9.87, 'affiliation': 'Republican'},
+		{ 'name': 'Pennsylvania', 'return': 1.41, 'fed_funding_pct': 30.70, 'fed_empl': 5.44, 'civ_empl': 3.32, 'affiliation': 'Democrat'},
+		{ 'name': 'California', 'return': 0.68, 'fed_funding_pct': 26.44, 'fed_empl': 8.86, 'civ_empl': 2.79, 'affiliation': 'Democrat'}
+		];
+
+// 1. A horizontal bar chart of 'return'
+
+	var left_padding = 120;
+	var width = 500;
+	var max_value = d3.max(states, function(d) { return d['return']; });
+
+	var scale = d3.scale.linear()
+		.domain([0, max_value])
+		.range([0, width - left_padding - 20]);
+		// - 20 to give padding on the right as well
+
+	var return_chart = d3.select(".return").attr('width', width);
+
+	var return_rectangles = return_chart.selectAll("rect")
+		.data(states)
+		.enter()
+		.append("rect")
+        .attr('y', function(d, i) {
+          	return i * 30 + 30;
+      		})
+        .attr('x', left_padding)
+        .attr('height', 15)
+        .style('fill', function(d) {
+			if (d['affiliation'] === 'Democrat') {
+				return '#0097ff';
+			} else if (d['affiliation'] === 'Republican'){
+				return '#d44d4d';
+			} else {
+				return '#e0ceed';
+			}
+			})
+        // For the sake of fun.. 
+        .attr('width', 1)
+        .transition()
+ 		.ease("bounce")
+ 		.duration(1000)
+        .attr('width', function(d) {
+        	return scale(d['return']);
+        });
+
+	var labels = return_chart.selectAll('text')
+		.data(states)
+		.enter()
+		.append('text')
+		.text(function(d) {
+			return d['name'];
+			})
+		.attr('x', left_padding - 15)
+        .attr('y', function(d, i) {
+          	return i * 30 + 42;
+      		})
+		.attr('text-anchor', 'end');
+
+	var axis = d3.svg.axis()
+        .orient('bottom')
+        .ticks(8)
+        .scale(scale);
+
+	return_chart.append('g')
+		.attr('transform', 'translate(120,330)')
+		.attr('class', 'xaxis')
+		.call(axis);
+
+// 2. A bar chart of 'fed_funding_pct'
+
+	var bottom_padding = 120;
+	var height = 400;
+	var max_value = d3.max(states, function(d) { return d['fed_funding_pct']; });
+
+	var scale = d3.scale.linear()
+		.domain([0, max_value])
+		.range([0, height - bottom_padding - 20]);
+
+	var color_scale = d3.scale.linear()
+		.domain([0, max_value])
+		.range(['#FAFAFA', '#5bb12f']);
+
+	// Creating a yscale to use specifically over our y-axis..
+	var yscale = d3.scale.linear()
+		.domain([0, max_value])
+		.range([height - bottom_padding - 20, 0]);
+
+	var fedfunding_chart = d3.select(".federal_funding").attr('height', height);
+
+	var fedfunding_rectangles = fedfunding_chart.selectAll("rect")
+		.data(states)
+		.enter()
+		.append("rect")
+        .attr('x', function(d, i) {
+          	return i * 35 + 60;
+      		})
+        .attr('y', function(d, i) {
+        	return height - bottom_padding - scale(d['fed_funding_pct']);
+        	})
+        .attr('width', 15)
+        .style('fill', function(d) {
+            return color_scale(d['fed_funding_pct']);
+          	})
+        .attr('height', function(d) {
+        	return scale(d['fed_funding_pct']);
+        });
+
+	var labels = fedfunding_chart.selectAll('text.state')
+		.data(states)
+		.enter()
+		.append('text')
+		.attr("class", "state")
+		.text(function(d) {
+			return d['name'];
+			})
+		.attr('x', -((height - bottom_padding) + 10))
+        .attr('y', function(d, i) {
+          	return i * 35 + 72;
+      		})
+		.attr('text-anchor', 'end')
+		.attr('transform', "rotate(-90)");
+
+	var yaxis = d3.svg.axis()
+        .orient('left')
+        .ticks(5)
+        .tickFormat(function(d) { return d + "%"; })
+        .scale(yscale);
+
+	fedfunding_chart.append('g')
+		.attr('transform', 'translate(40,20)')
+		.attr('class', 'xaxis')
+		.call(yaxis);
+
+	var index_labels = fedfunding_chart.selectAll('text.value')
+		.data(states)
+		.enter()
+		.append('text')
+		.attr("class", "value")
+		.text(function(d) {
+			return d['fed_funding_pct']+"%";
+			})
+		.attr('y', function(d) {
+			return (height - bottom_padding - scale(d['fed_funding_pct'])) - 4;
+			})
+        .attr('x', function(d, i) {
+          	return i * 35 + 72;
+      		})
+		.attr('text-anchor', 'middle');
+
+// 3. A scatterplot 
+	
+	var width = 500;
+	var height = 500;
+	var left_padding = 50;
+	var bottom_padding = 50;
+
+	var xmax_value = d3.max(states, function(d) { return d['fed_funding_pct']; });
+	var ymax_value = d3.max(states, function(d) { return d['fed_empl']; });
+
+	var xscale = d3.scale.linear()
+		.domain([0, xmax_value])
+		.range([0, width - left_padding - 30]);
+
+	var yscale = d3.scale.linear()
+		.domain([0, ymax_value])
+		.range([0, height - bottom_padding - 20]);
+
+	// var yaxis_scale = d3.scale.linear()
+	// 	.domain([0, ymax_value])
+	// 	.range([height - bottom_padding - 20, 0]);
+
+	var fundvempl_chart = d3.select(".funding_v_empl").attr('height', height).attr('width', width);
+
+	var fundvempl_circles = fundvempl_chart.selectAll("circle")
+		.data(states)
+		.enter()
+		.append("circle")
+        .attr('cx', function(d) {
+          	return xscale(d['fed_funding_pct']) + left_padding;
+      		})
+        .attr('cy', function(d) {
+          	return height - bottom_padding - yscale(d['fed_empl']);
+      		})
+        .attr('r', function(d) {
+        	return Math.sqrt(d['return']) * 15;
+        })
+		.style('fill', function(d) {
+			if (d['affiliation'] === 'Democrat') {
+				return '#0097ff';
+			} else if (d['affiliation'] === 'Republican'){
+				return '#d44d4d';
+			} else {
+				return '#e0ceed';
+			}
+		});
+
+	var labels = fundvempl_chart.selectAll('text.state_label')
+		.data(states)
+		.enter()
+		.append('text')
+		.attr("class", "state_label")
+		.text(function(d) {
+			return d['name'];
+			})
+        .attr('x', function(d) {
+          	return xscale(d['fed_funding_pct']) + left_padding;
+      		})
+        .attr('y', function(d) {
+          	return height - bottom_padding - yscale(d['fed_empl']) + 3;
+      		})
+		.attr('text-anchor', 'middle');
+
+// But why, Soma, why?? 
+
+	// var yaxis = d3.svg.axis()
+ //        .orient('left')
+ //        .ticks(5)
+ //        .scale(yaxis_scale);
+
+	// fundvempl_chart.append('g')
+	// 	.attr('transform', 'translate(50,20)')
+	// 	.attr('class', 'xaxis')
+	// 	.call(yaxis);
+
+	// var xaxis = d3.svg.axis()
+ //        .orient('bottom')
+ //        .ticks(5)
+ //        .tickFormat(function(d) { return d + "%"; })
+ //        .scale(xscale);
+
+	// fundvempl_chart.append('g')
+	// 	.attr('transform', 'translate(50,450)')
+	// 	.attr('class', 'xaxis')
+	// 	.call(xaxis);
+
+// 4. Scatterplot Copy with x & y axes
+
+	var width = 500;
+	var height = 500;
+	var left_padding = 50;
+	var bottom_padding = 50;
+
+	var xmax_value = d3.max(states, function(d) { return d['fed_funding_pct']; });
+	var ymax_value = d3.max(states, function(d) { return d['fed_empl']; });
+
+	var xscale = d3.scale.linear()
+		.domain([0, xmax_value])
+		.range([0, width - left_padding - 30]);
+
+	var yscale = d3.scale.linear()
+		.domain([0, ymax_value])
+		.range([0, height - bottom_padding - 20]);
+
+	var yaxis_scale = d3.scale.linear()
+		.domain([0, ymax_value])
+		.range([height - bottom_padding - 20, 0]);
+
+	var fundvempl_chart = d3.select(".funding_v_empl_v2").attr('height', height).attr('width', width);
+
+	var fundvempl_circles = fundvempl_chart.selectAll("circle")
+		.data(states)
+		.enter()
+		.append("circle")
+        .attr('cx', function(d) {
+          	return xscale(d['fed_funding_pct']) + left_padding;
+      		})
+        .attr('cy', function(d) {
+          	return height - bottom_padding - yscale(d['fed_empl']);
+      		})
+		.style('fill', function(d) {
+			if (d['affiliation'] === 'Democrat') {
+				return '#0097ff';
+			} else if (d['affiliation'] === 'Republican'){
+				return '#d44d4d';
+			} else {
+				return '#e0ceed';
+			}
+			})
+		.style('opacity', 0.90)
+		// For fun...
+		.attr('r', 1)
+		.transition()
+ 		.ease("linear")
+ 		.duration(500)
+		.attr('r', function(d) {
+        	return Math.sqrt(d['return']) * 15;
+    	});
+
+	var labels = fundvempl_chart.selectAll('text.state_label')
+		.data(states)
+		.enter()
+		.append('text')
+		.attr("class", "state_label")
+		.text(function(d) {
+			return d['name'];
+			})
+        .attr('x', function(d) {
+          	return xscale(d['fed_funding_pct']) + left_padding;
+      		})
+        .attr('y', function(d) {
+          	return height - bottom_padding - yscale(d['fed_empl']) + 3;
+      		})
+		.attr('text-anchor', 'middle');
+
+	var yaxis = d3.svg.axis()
+        .orient('left')
+        .ticks(5)
+        .scale(yaxis_scale);
+
+	fundvempl_chart.append('g')
+		.attr('transform', 'translate(50,20)')
+		.attr('class', 'xaxis')
+		.call(yaxis);
+
+	var xaxis = d3.svg.axis()
+        .orient('bottom')
+        .ticks(5)
+        .tickFormat(function(d) { return d + "%"; })
+        .scale(xscale);
+
+	fundvempl_chart.append('g')
+		.attr('transform', 'translate(50,450)')
+		.attr('class', 'xaxis')
+		.call(xaxis);
+
+	</script>
+
+</body>
+</html>

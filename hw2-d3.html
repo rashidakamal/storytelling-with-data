@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bars & Circles</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+
+</head>
+
+<body>
+
+<svg width="400" height="400">
+	<rect y="10"></rect>
+	<rect y="40"></rect>
+	<rect y="70"></rect>
+	<rect y="100"></rect>
+	<rect y="130"></rect>
+</svg>
+
+<svg width="400" height="400">
+	<circle cx="10"></circle>
+	<circle cx="70"></circle>
+	<circle cx="130"></circle>
+	<circle cx="190"></circle>
+	<circle cx="250"></circle>
+</svg>
+
+<script>
+
+// Rectangle stuff
+
+	var rectangles = d3.selectAll("rect");
+	rectangles.style('fill', 'white');
+
+	rectangles.attr('x', 30)
+		.attr('width', 15)
+		.attr('height', 15);
+
+	var datapoints = [10, 140, 78, 111, 20];
+
+	rectangles.data(datapoints);
+
+	rectangles.transition()
+ 		.ease("bounce")
+ 		.duration(1000)
+ 		.style('fill', "#36cbd6")
+ 		.attr('width', function(d) {
+ 			return d * 2;
+ 		});
+
+// Circle stuff 
+
+	var fulldata = [
+      { 'year': 2012, 'sales': 500 },
+      { 'year': 2010, 'sales': 10 },
+      { 'year': 2011, 'sales': 140 },
+      { 'year': 2013, 'sales': 111 },
+      { 'year': 2014, 'sales': 20 },
+    ];
+
+	var circles = d3.selectAll("circle");
+
+	circles.attr('r', 5)
+		.attr('cy', 70);
+
+	circles.data(fulldata);
+
+	circles.attr('r', function(d) {
+		return Math.sqrt(d.sales);
+	});
+
+// In the instructions, you say that we should set the cy values based on the year -- I'm guessing you meant cx values, since changing cy values will not move 2012 to the middle. 
+
+	circles.attr('cx', function(d) {
+		return ((d.year - 2010) * 60) + 10;
+	});
+
+	circles.style('fill', function(d) {
+		if (d.year === 2014) {
+			return 'red';
+		} else {
+			return 'grey';
+		}
+	});
+
+</script>
+
+</body>
+</html>

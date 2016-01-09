@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>States Stuff</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+
+</head>
+
+<body>
+
+	<svg width="400" height="400">
+		<rect></rect>
+		<rect></rect>
+		<rect></rect>
+		<rect></rect>
+		<rect></rect>
+		<rect></rect>
+	</svg>
+
+	<svg class="area_chart" width="400" height="400">
+	</svg>
+
+	<script>
+
+// Dictionaries of state stuff
+
+	var statedata = [
+      { 'name': 'Alaska', 'area': 665384, 'water_coverage': 14.2,'land_area': 570641},
+      { 'name': 'California', 'area': 163695, 'water_coverage': 4.8,'land_area': 155779},
+      { 'name': 'Maine', 'area': 35380, 'water_coverage': 12.8,'land_area': 30843},
+      { 'name': 'Montana', 'area': 147040, 'water_coverage': 1.0,'land_area': 145546},
+      { 'name': 'New York', 'area': 54555, 'water_coverage': 13.6,'land_area': 47126},
+      { 'name': 'Pennsylvania', 'area': 46054, 'water_coverage': 2.8,'land_area': 44743},
+    ];
+
+// Horizontal Bar Graph of Percent of State Covered in Water
+    var water_rectangles = d3.selectAll("rect")
+    	.data(statedata)
+	    .attr('x', 30)
+    	.attr('y', function(d, i) {
+          	return i * 40 + 30;
+      		})
+	    .attr('width', function(d) {
+            return d['water_coverage'] * 10;
+      		})
+		.attr('height', 15)
+		.style('fill', '#66cccc');
+
+// Vertical Bar Graph of Total Square Miles of State
+	var area_chart = d3.select(".area_chart");
+
+	var area_rectangles = area_chart.selectAll("rect")
+		.data(statedata)
+		.enter()
+		.append("rect")
+        .attr('x', function(d, i) {
+          	return i * 40 + 30;
+      		})
+        .attr('y', function(d) {
+        	return 250 - d['area'] / 5000;
+        })
+        .attr('width', 15)
+        .attr('height', function(d) {
+        	return d['area'] / 5000;
+        })
+		.style('fill', function(d) {
+			if (d['area'] > 50000) {
+				return '#a8aeb8';
+			} else {
+				return '#b2dfee';
+			}
+	});
+
+	</script>
+
+</body>
+</html>
